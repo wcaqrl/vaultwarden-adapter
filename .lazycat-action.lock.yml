@@ -6,7 +6,7 @@ source:
     revision: 7c188967e7a467b19b2757bc3326f9cf3ccae327
     tag: 1.37.4
 fingerprint: sha256:f6fcc740e8b3ef6a745a2a5e80e0566d5a34dc09687ef79dd4affc970dc01e73
-status: packaged
+status: submitted
 images:
     - id: vaultwarden
       source_ref: docker.io/vaultwarden/server:1.37.4@sha256:2bb2e0344616c62a6d76ea10558497499f8ed3f731400e143dc7bf17b757b5b9
@@ -76,3 +76,18 @@ application:
 
         [Join Discussion](https://github.com/dani-garcia/vaultwarden/discussions/7823)
 packaged_at: 2026-10-19T10:18:18.794432196Z
+reviews:
+    - id: 20852
+      source:
+        kind: git
+        version: 1.37.4
+        ref: refs/tags/1.37.4
+        revision: 7c188967e7a467b19b2757bc3326f9cf3ccae327
+        tag: 1.37.4
+      fingerprint: sha256:f6fcc740e8b3ef6a745a2a5e80e0566d5a34dc09687ef79dd4affc970dc01e73
+      application_version: 1.37.4
+      lpk_sha256: 577cc8f7746717c3768c58873f57ae80b810d9d90cc0652e1f5dfeda4bd4a6f4
+      status: waiting
+      created_at: 2026-10-19T10:18:33.867Z
+      submitted_at: 2026-10-19T10:18:33.982230046Z
+      checked_at: 2026-10-19T10:18:33.982230447Z
