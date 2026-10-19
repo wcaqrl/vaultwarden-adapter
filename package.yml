@@ -1,0 +1,24 @@
+package: cloud.lazycat.app.vaultwarden
+# Approved store baseline. The Action updates this after validating a release.
+version: 1.37.0
+name: Vaultwarden
+description: 开源的自托管密码管理器，兼容 Bitwarden 客户端，集中管理账号、密码和安全笔记。
+homepage: https://github.com/dani-garcia/vaultwarden
+author: dani-garcia
+license: AGPL-3.0-only
+min_os_version: 1.5.0
+# Preserve the existing store package's LazyCat launcher platform policy.
+# This does not disable connections from native Bitwarden mobile clients.
+unsupported_platforms:
+  - android
+  - ios
+locales:
+  zh-CN:
+    name: Vaultwarden
+    description: 开源的自托管密码管理器，兼容 Bitwarden 客户端，集中管理账号、密码和安全笔记。
+  en-US:
+    name: Vaultwarden
+    description: An open-source, self-hosted password manager compatible with Bitwarden clients.
+permissions:
+  required:
+    - net.internet

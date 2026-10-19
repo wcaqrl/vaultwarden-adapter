@@ -1,0 +1,51 @@
+version: 2
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/cloud.lazycat.app.vaultwarden.lpk
+  target_arch: amd64
+source:
+  kind: git
+  url: https://github.com/dani-garcia/vaultwarden.git
+  select:
+    strategy: semver-tag
+    # Vaultwarden stable Git tags are x.y.z, WITHOUT a v prefix. Only those
+    # tags trigger updates: main, testing and Alpine image tags are excluded.
+    tag_regex: '^[0-9]+\.[0-9]+\.[0-9]+$'
+changelog:
+  mode: github-release
+  git_url: https://github.com/dani-garcia/vaultwarden.git
+state:
+  file: .lazycat-action.lock.yml
+update:
+  strategy: publish
+  allow_downgrade: false
+build:
+  run_buildscript: true
+  prepare:
+    mode: command
+    context: scripts
+    command: ./scripts/test-upgrade.sh
+    # Resolve the exact selected Git version, not :latest. The prepare script
+    # tests its platform digest; the buildscript compares that digest with
+    # the Action-generated upstream pin before allowing the LPK to be built.
+    output_image: 'docker.io/vaultwarden/server:{source_version}'
+images:
+  - id: vaultwarden
+    target: service
+    service: web
+    source: docker.io/vaultwarden/server
+    delivery:
+      mode: lazycat
+stores:
+  official:
+    enabled: true
+    skip_if_version_exists: true
+    continue_if_newer_version: true
+    create_if_missing: false
+    retry:
+      enabled: true
+      max_attempts: 5
+      initial_delay: 2s
+      max_delay: 30s

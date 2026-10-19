@@ -1,0 +1,5 @@
+params:
+  - id: admin_token
+    type: secret
+    name: 管理员 Key
+    description: 安装时设置 Vaultwarden 管理面板使用的管理员 Key。

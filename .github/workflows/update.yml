@@ -1,0 +1,92 @@
+name: Update Vaultwarden for LazyCat
+run-name: ${{ (github.event_name == 'push' || inputs.dry-run == true) && 'Vaultwarden → LazyCat [仅检查]' || 'Vaultwarden → LazyCat [验证升级、打包并送审]' }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/update.yml
+      - scripts/**
+      - tests/**
+      - lazycat-action.yml
+      - lzc-build.yml
+      - lzc-manifest.yml
+      - lzc-deploy-params.yml
+      - package.yml
+      - icon.png
+  schedule:
+    # 04:47 UTC = 每天北京时间 12:47；GitHub 定时任务可能延迟。
+    - cron: '47 4 * * *'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 勾选＝仅检查版本；取消勾选＝验证升级、转存镜像、打包并提交审核。
+        type: boolean
+        default: true
+      retry-rejected:
+        description: 修复适配后重试已被拒绝的源版本，分配新的应用版本；须取消仅检查。
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: vaultwarden-lazycat-update
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify adapter scripts and digest guard
+        run: |
+          bash -n scripts/test-upgrade.sh
+          python3 -B -m unittest discover -s tests -v
+      - name: Test the latest stable release when adapter code changes
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          version="$(git ls-remote --tags https://github.com/dani-garcia/vaultwarden.git |
+            awk -F/ '{print $3}' | sed 's/\^{}$//' |
+            grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -Vu | tail -n 1)"
+          LAZYCAT_SOURCE_VERSION="$version" LAZYCAT_APPLICATION_VERSION="$version" ./scripts/test-upgrade.sh
+      - name: Verify write access and developer permission
+        if: github.event_name != 'push' && inputs.dry-run != true
+        env:
+          LZC_API_TOKEN: ${{ secrets.LZC_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          git push --dry-run origin "HEAD:${GITHUB_REF_NAME}"
+          if [[ -z "${LZC_API_TOKEN}" ]]; then
+            echo '::error::Add LZC_API_TOKEN in this adapter repository: Settings → Secrets and variables → Actions.'
+            exit 1
+          fi
+          response_file="${RUNNER_TEMP}/vaultwarden-review-access.json"
+          curl --fail --silent --show-error \
+            --header "X-API-Token: ${LZC_API_TOKEN}" \
+            --output "${response_file}" \
+            'https://appstore.api.lazycat.cloud/sdk/v3/developer/app/cloud.lazycat.app.vaultwarden/review/list?page=0&size=1'
+          python3 - "${response_file}" <<'PY'
+          import json
+          import sys
+          with open(sys.argv[1], encoding="utf-8") as response:
+              result = json.load(response)
+          if result.get("errorCode") != 0:
+              raise SystemExit("Developer PAT cannot access cloud.lazycat.app.vaultwarden reviews: " + str(result.get("msg", "unknown error")))
+          print("Developer permission verified for cloud.lazycat.app.vaultwarden.")
+          PY
+
+  update:
+    needs: validate
+    uses: wcaqrl/lazycat-action/.github/workflows/lazycat.yml@v1
+    with:
+      config: lazycat-action.yml
+      operation: auto
+      runner: ubuntu-24.04
+      dry-run: ${{ github.event_name == 'push' || inputs.dry-run || false }}
+      retry-rejected: ${{ github.event_name == 'workflow_dispatch' && inputs.retry-rejected || false }}
+    secrets:
+      LZC_API_TOKEN: ${{ secrets.LZC_API_TOKEN }}

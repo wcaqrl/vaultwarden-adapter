@@ -1,0 +1,37 @@
+usage: |
+  使用自己的账号和主密码登录密码库。
+  管理面板使用安装时设置的“管理员 Key”，与用户主密码不同。
+  数据持久保存在 /lzcapp/var/data；升级前请备份该目录。
+application:
+  background_task: true
+  subdomain: vaultwarden
+  entries:
+    - id: vault
+      title: 密码库
+      path: /#/login
+    - id: admin
+      title: 管理面板
+      path: /admin
+      prefix_domain: admin
+  routes:
+    - /=http://web.cloud.lazycat.app.vaultwarden.lzcapp:80
+  # Native Bitwarden clients need the application APIs without a LazyCat
+  # browser-login redirect. Vaultwarden still enforces its own authentication.
+  public_path:
+    - /
+  depends_on:
+    - web
+services:
+  web:
+    # The approved 1.37.0 LPK's origin_hash matches this official amd64 image.
+    # upstream: docker.io/vaultwarden/server:1.37.0@sha256:f73331a80bdc497903ba3c375f556cefb4d40a5af156989beae79a58aba3e582
+    image: registry.lazycat.cloud/u15541362/vaultwarden/server:07bed8a62150fefe
+    environment:
+      # Preserve the existing signup policy and installation parameter ID.
+      - SIGNUPS_ALLOWED=true
+      - 'ADMIN_TOKEN={{ .U.admin_token }}'
+      - 'DOMAIN=https://{{ .S.AppDomain }}'
+    binds:
+      # Never rename this directory: upgrades must reuse users, encrypted
+      # vaults, attachments, config.json and the original RSA signing keys.
+      - /lzcapp/var/data:/data

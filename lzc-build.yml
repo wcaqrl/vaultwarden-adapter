@@ -1,0 +1,7 @@
+manifest: ./lzc-manifest.yml
+icon: ./icon.png
+deploy_params: ./lzc-deploy-params.yml
+pkgout: ./dist
+# Fail before packaging/submission if a mutable upstream image tag changed
+# between the upgrade test and lazycat-action's immutable image delivery.
+buildscript: python3 -B scripts/verify-package.py
