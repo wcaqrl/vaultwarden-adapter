@@ -24,8 +24,8 @@ application:
 services:
   web:
     # The approved 1.37.0 LPK's origin_hash matches this official amd64 image.
-    # upstream: docker.io/vaultwarden/server:1.37.0@sha256:f73331a80bdc497903ba3c375f556cefb4d40a5af156989beae79a58aba3e582
-    image: registry.lazycat.cloud/u15541362/vaultwarden/server:07bed8a62150fefe
+    # upstream: docker.io/vaultwarden/server:1.37.4@sha256:2bb2e0344616c62a6d76ea10558497499f8ed3f731400e143dc7bf17b757b5b9
+    image: registry.lazycat.cloud/peter/vaultwarden/server:aa5d0531862fb9ca
     environment:
       # Preserve the existing signup policy and installation parameter ID.
       - SIGNUPS_ALLOWED=true

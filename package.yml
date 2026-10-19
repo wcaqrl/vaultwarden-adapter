@@ -1,6 +1,6 @@
 package: cloud.lazycat.app.vaultwarden
 # Approved store baseline. The Action updates this after validating a release.
-version: 1.37.0
+version: 1.37.4
 name: Vaultwarden
 description: 开源的自托管密码管理器，兼容 Bitwarden 客户端，集中管理账号、密码和安全笔记。
 homepage: https://github.com/dani-garcia/vaultwarden
