@@ -6,7 +6,7 @@ source:
     revision: 6ed6921cc2b0e03b4d74189574d2a5e71c512e97
     tag: 1.37.5
 fingerprint: sha256:612eaacbc9baa6713179d45a1d0e54ecb3d34c8d3ed8c3e143bcb76b726572d0
-status: packaged
+status: submitted
 images:
     - id: vaultwarden
       source_ref: docker.io/vaultwarden/server:1.37.5@sha256:f8863ab2519364bfc657144006682a830784e0bb501606d5e34516ee76b60b5c
@@ -105,3 +105,17 @@ reviews:
       created_at: 2026-10-19T10:18:33.867Z
       submitted_at: 2026-10-19T10:18:33.982230046Z
       checked_at: 2026-10-20T09:40:23.248274776Z
+    - id: 22449
+      source:
+        kind: git
+        version: 1.37.5
+        ref: refs/tags/1.37.5
+        revision: 6ed6921cc2b0e03b4d74189574d2a5e71c512e97
+        tag: 1.37.5
+      fingerprint: sha256:612eaacbc9baa6713179d45a1d0e54ecb3d34c8d3ed8c3e143bcb76b726572d0
+      application_version: 1.37.5
+      lpk_sha256: 716ff15db065e46e4b8d0cac0812e6d9eced6dafd713cd8e5d67505020a0e0fa
+      status: waiting
+      created_at: 2026-11-02T12:56:15.224Z
+      submitted_at: 2026-11-02T12:56:15.355812291Z
+      checked_at: 2026-11-02T12:56:15.355813053Z
